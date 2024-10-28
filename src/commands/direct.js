@@ -33,14 +33,9 @@ module.exports = {
             }
 
             role.members.forEach(member => {
-                console.log(Arr)
-                Arr.forEach((item) => {
-                    console.log(item)
-                    console.log(member.user.tag)
-                    member.send(msg).catch(error => {
-                        console.error(`Não foi possível enviar mensagem para ${member.user.tag}:`, error);
-                    });
-                })
+                member.send(msg).catch(error => {
+                    console.error(`Não foi possível enviar mensagem para ${member.user.tag}:`, error);
+                });
             });
 
             interaction.reply({
