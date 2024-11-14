@@ -25,6 +25,15 @@ module.exports = {
             const role = interaction.options.getRole('role');
             const msg = interaction.options.getString('msg');
 
+            // Função para adicionar delay
+            function delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            // Listas para armazenar os resultados de envio
+            const sentMembers = [];
+            const failedMembers = [];
+
             if (role.members.size === 0) {
                 return interaction.reply({
                     content: `⚠️ O cargo ${role.name} não possui membros para enviar a mensagem ⚠️`,
@@ -32,16 +41,46 @@ module.exports = {
                 });
             }
 
-            role.members.forEach(member => {
-                member.send(msg).catch(error => {
-                    console.error(`Não foi possível enviar mensagem para ${member.user.tag}:`, error);
+            async function sendMessagesWithDelay() {
+                interaction.reply({
+                    content: `Enviando...`,
+                    ephemeral: true
                 });
-            });
+                for (const member of role.members.values()) {
+                    try {
+                        await member.send(msg);
+                        sentMembers.push(`✅ ${member.user.tag}`);
 
-            interaction.reply({
-                content: `📤 Mensagem enviada para todos os membros do cargo ${role.name}.`,
-                ephemeral: true
-            });
+                    } catch (error) {
+                        failedMembers.push({ tag: member.user.tag, error: error.message }); // Armazena o erro
+                        console.error(`Não foi possível enviar mensagem para ${member.user.tag}:`, error);
+
+                    }
+                    let successMessage = sentMembers.length > 0 ? `Enviados com sucesso:\n ${sentMembers.join("\n")}` : "Nenhuma mensagem foi enviada com sucesso.";
+                    let failureMessage = failedMembers.length > 0
+                        ? `❌ Falhas:\n${failedMembers.map(f => `${f.tag}: ${f.error}`).join("\n")}`
+                        : "Nenhuma falha de envio.";
+                    interaction.editReply({
+                        content: `📊 Envios:\n\n${successMessage}\n\n${failureMessage}`,
+                        ephemeral: true
+                    });
+
+                    // Delay de 5 segundos antes de enviar para o próximo membro
+                    await delay(5000);
+                }
+
+                // Criação do painel de resultados
+
+
+                // Responde à interação com o painel de resultados
+
+            }
+
+            // Chama a função de envio
+            return new Promise((res, rej) => {
+                res(sendMessagesWithDelay());
+            })
+
 
         } catch (error) {
             console.error(error);
