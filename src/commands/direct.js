@@ -23,8 +23,9 @@ module.exports = {
 
         try {
             const role = interaction.options.getRole('role');
+            const members = await role.guild.members.fetch();
             const msg = interaction.options.getString('msg');
-
+            console.log(role.members.size)
             // Função para adicionar delay
             function delay(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
@@ -50,10 +51,11 @@ module.exports = {
                     try {
                         await member.send(msg);
                         sentMembers.push(`✅ ${member.user.tag}`);
+                        console.log(`✅ ${member.user.tag}`)
 
                     } catch (error) {
                         failedMembers.push({ tag: member.user.tag, error: error.message }); // Armazena o erro
-                        console.error(`Não foi possível enviar mensagem para ${member.user.tag}:`, error);
+                        console.error(`Não foi possível enviar mensagem para ${member.user.tag}:`);
 
                     }
                     let successMessage = sentMembers.length > 0 ? `Enviados com sucesso:\n ${sentMembers.join("\n")}` : "Nenhuma mensagem foi enviada com sucesso.";
@@ -68,12 +70,6 @@ module.exports = {
                     // Delay de 5 segundos antes de enviar para o próximo membro
                     await delay(5000);
                 }
-
-                // Criação do painel de resultados
-
-
-                // Responde à interação com o painel de resultados
-
             }
 
             // Chama a função de envio
