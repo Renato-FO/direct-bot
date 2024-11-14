@@ -44,7 +44,7 @@ module.exports = {
 
             async function sendMessagesWithDelay() {
                 interaction.reply({
-                    content: `Enviando...`,
+                    content: `${role.members.size} usuários encontrados, realizando envios...`,
                     ephemeral: true
                 });
                 for (const member of role.members.values()) {
