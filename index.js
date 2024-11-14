@@ -25,7 +25,7 @@ for (const file of commandFiles) {
 
 client.once('ready', () => {
     console.log('Bot online 🔥')
-})
+});
 
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return
